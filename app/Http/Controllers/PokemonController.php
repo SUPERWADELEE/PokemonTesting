@@ -71,28 +71,6 @@ class PokemonController extends Controller
         return PokemonResource::collection($pokemons);
     }
 
-
-    // 寶可夢新增(目前沒有)
-    // public function store(StorePokemonRequest $request)
-    // {
-    //     $validatedData = $request->validated();
-    //     $user = JWTAuth::parseToken()->authenticate();
-    //     $userId = $user->id;
-    //     $validatedData['user_id'] = $userId;
-    //     Pokemon::create($validatedData);
-    // }
-
-    // 寶可夢資料修改(目前沒有)
-    // public function update(UpdatePokemonRequest $request, Pokemon $pokemon)
-    // {
-    //     $pokemon->load(['ability', 'nature', 'race']);
-    //     // 你不能去修改別人的神奇寶貝
-    //      $this->authorize('update', $pokemon); 
-    //      //path:Model/pokemon-> path:model->policy
-    //     $pokemon->update($request->validated());
-    //     // return PokemonResource::make($pokemon);
-    // }
-
     
     /**
      * 顯示指定寶可夢的詳細資訊。
