@@ -1,12 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Http\Resources\RaceResource;
-use App\Http\Resources\SkillResource;
-use App\Models\Pokemon;
 use App\Models\Race;
-use Illuminate\Http\Request;
+
 
 /**
  * @group Race

@@ -3,22 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchPokemonRequest;
-use App\Http\Requests\StorePokemonRequest;
-use App\Http\Requests\UpdatePokemonRequest;
 use App\Http\Resources\PokemonResource;
-use App\Models\Nature;
 use App\Models\Pokemon;
-use App\Models\Race;
-use App\Models\Skill;
-use App\Models\User;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Mockery\Expectation;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request as LaravelRequest;
-use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -27,10 +14,6 @@ use Illuminate\Support\Facades\Log;
  * 
  * @authenticated
  */
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PokemonController extends Controller
 {

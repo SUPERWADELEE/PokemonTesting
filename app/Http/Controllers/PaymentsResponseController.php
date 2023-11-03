@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Events\TransactionSuccess;
-use App\Mail\TransactionSuccessMail;
 use App\Models\CartItem;
-use App\Models\Pokemon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Services\NewebpayMpgResponse;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * @group PaymentResponse

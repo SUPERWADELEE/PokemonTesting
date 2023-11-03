@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CartItemResource;
 use App\Models\CartItem;
 use App\Models\Race;
-use App\Models\ShoppingCart;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 /**
