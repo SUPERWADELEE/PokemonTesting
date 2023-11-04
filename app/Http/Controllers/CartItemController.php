@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Resources\CartItemResource;
 use App\Models\CartItem;
 use App\Models\Race;
-use App\Models\ShoppingCart;
-use App\Models\User;
 use Illuminate\Http\Request;
 
 /**
@@ -198,30 +196,4 @@ class CartItemController extends Controller
         return response()->noContent();
     }
 
-
-    // public function calculateTotalPrice(Request $request)
-    // {
-    //     $request->validate([
-    //         'cart_item_ids' => 'required|array|exists:cart_items,id',
-    //     ]);
-
-    //     // 確保這些項目都屬於當前用戶
-    //     $userId = auth()->user()->id;
-    //     $cartItems = CartItem::whereIn('id', $request->cart_item_ids)
-    //         ->where('user_id', $userId)
-    //         ->get();
-
-    //     // 當你輸入不是這個使用者的購物車的時候
-    //     // 數量會對不起來
-    //     if (count($cartItems) != count($request->cart_item_ids)) {
-    //         return response(['error' => 'Some cart items do not belong to the user or do not exist'], 403);
-    //     }
-
-    //     // 計算總價格
-    //     $totalPrice = $cartItems->sum(function ($item) {
-    //         return $item->current_price * $item->quantity;
-    //     });
-
-    //     return response(['data' => ['total_price' => $totalPrice]], 200);
-    // }
 }

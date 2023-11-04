@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\OrderDetailRequest;
 use App\Http\Resources\OrderDetailResource;
-use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Race;
-use Illuminate\Http\Request;
 
 /**
  * @group OrderDetail

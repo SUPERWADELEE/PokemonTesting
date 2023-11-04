@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\OrderRequst;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\OrderDetail;
-use Illuminate\Http\Request;
 
 /**
  * @group Order

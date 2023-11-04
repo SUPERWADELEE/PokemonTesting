@@ -3,22 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SearchPokemonRequest;
-use App\Http\Requests\StorePokemonRequest;
-use App\Http\Requests\UpdatePokemonRequest;
 use App\Http\Resources\PokemonResource;
-use App\Models\Nature;
 use App\Models\Pokemon;
-use App\Models\Race;
-use App\Models\Skill;
-use App\Models\User;
 use Exception;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Mockery\Expectation;
-use GuzzleHttp\Client;
-use GuzzleHttp\Pool;
-use GuzzleHttp\Psr7\Request as LaravelRequest;
-use Illuminate\Support\Facades\Log;
 
 
 /**
@@ -27,10 +14,6 @@ use Illuminate\Support\Facades\Log;
  * 
  * @authenticated
  */
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class PokemonController extends Controller
 {
@@ -70,28 +53,6 @@ class PokemonController extends Controller
         $pokemons = $user->pokemons()->with(['user', 'ability', 'nature', 'race'])->get();
         return PokemonResource::collection($pokemons);
     }
-
-
-    // 寶可夢新增(目前沒有)
-    // public function store(StorePokemonRequest $request)
-    // {
-    //     $validatedData = $request->validated();
-    //     $user = JWTAuth::parseToken()->authenticate();
-    //     $userId = $user->id;
-    //     $validatedData['user_id'] = $userId;
-    //     Pokemon::create($validatedData);
-    // }
-
-    // 寶可夢資料修改(目前沒有)
-    // public function update(UpdatePokemonRequest $request, Pokemon $pokemon)
-    // {
-    //     $pokemon->load(['ability', 'nature', 'race']);
-    //     // 你不能去修改別人的神奇寶貝
-    //      $this->authorize('update', $pokemon); 
-    //      //path:Model/pokemon-> path:model->policy
-    //     $pokemon->update($request->validated());
-    //     // return PokemonResource::make($pokemon);
-    // }
 
     
     /**
