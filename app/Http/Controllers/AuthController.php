@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
@@ -43,7 +44,7 @@ class AuthController extends Controller
      *   "error": "信箱未驗證"
      * }
      */
-    public function login(Request $request)
+    public function login(Request $request, AuthService $authService)
 {
     // 驗證表單
     $credentials = $request->validate([
@@ -51,25 +52,21 @@ class AuthController extends Controller
         'password' => 'required|string',
     ]);
 
-    // 嘗試使用憑證獲取 JWT token
-    $token = JWTAuth::attempt($credentials);
+    // 使用 AuthService 處理登錄
+    $loginResponse = $authService->attemptLogin($credentials);
 
-    // 如果 token 不存在，返回錯誤
-    if (!$token) {
-        return response()->json(['error' => '無效的憑證'], 401);
+    if (array_key_exists('error', $loginResponse)) {
+        // 如果有錯誤，返回相應的錯誤信息
+        return response()->json(['error' => $loginResponse['error']], $loginResponse['status']);
     }
 
     // 生成響應
     $response = response()->json([
         'message' => '登錄成功',
-    ], 200);
+    ], $loginResponse['status']);
 
-    // 獲取 token 的有效期（如有設置）
-    $tokenTTL = JWTAuth::factory()->getTTL() * 60; // 預設單位是分鐘，轉換為秒
-
-    // 創建 cookie 並附加到響應上
-    // 注意：在真實部署時，您可能還需要將 cookie 標記為 secure (只能通過 HTTPS 發送) 和 httpOnly (不能由 JavaScript 訪問)
-    $cookie = cookie('jwt', $token, $tokenTTL, null, null, false, true); // 最後兩個參數分別對應 secure 和 httpOnly
+    // 創建 cookie
+    $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, false, true);
 
     // 將 cookie 附加到響應
     return $response->cookie($cookie);
