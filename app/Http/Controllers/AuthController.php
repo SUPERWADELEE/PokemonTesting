@@ -44,26 +44,37 @@ class AuthController extends Controller
      * }
      */
     public function login(Request $request)
-    {
-        // 先針對輸入的部分做驗表單驗證       
-        $credentials = $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ]);
+{
+    // 驗證表單
+    $credentials = $request->validate([
+        'email' => 'required|string|email',
+        'password' => 'required|string',
+    ]);
 
-        // 根據進來的guard設定,去預先的表單設定查看輸入的資料是否存在
-        $token = JWTAuth::attempt($credentials);
+    // 嘗試使用憑證獲取 JWT token
+    $token = JWTAuth::attempt($credentials);
 
-        if (!$token) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
-        }
-
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'user' => Auth::user()
-        ], 200);
+    // 如果 token 不存在，返回錯誤
+    if (!$token) {
+        return response()->json(['error' => '無效的憑證'], 401);
     }
+
+    // 生成響應
+    $response = response()->json([
+        'message' => '登錄成功',
+    ], 200);
+
+    // 獲取 token 的有效期（如有設置）
+    $tokenTTL = JWTAuth::factory()->getTTL() * 60; // 預設單位是分鐘，轉換為秒
+
+    // 創建 cookie 並附加到響應上
+    // 注意：在真實部署時，您可能還需要將 cookie 標記為 secure (只能通過 HTTPS 發送) 和 httpOnly (不能由 JavaScript 訪問)
+    $cookie = cookie('jwt', $token, $tokenTTL, null, null, false, true); // 最後兩個參數分別對應 secure 和 httpOnly
+
+    // 將 cookie 附加到響應
+    return $response->cookie($cookie);
+}
+
 
 
 
