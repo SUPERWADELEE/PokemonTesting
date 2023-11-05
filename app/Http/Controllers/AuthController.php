@@ -120,26 +120,6 @@ class AuthController extends Controller
      * }
      */
 
-    public function verifyEmail(Request $request, $id, $hash)
-    {
-        $user = User::findOrFail($id);
-
-        // 此方法通常用來判斷文件是否被串改
-        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            throw new AuthorizationException();
-        }
-
-        // 判斷這個email是否已經驗證過
-        if ($user->hasVerifiedEmail()) {
-            return response(['message' => 'Email already verified.']);
-        }
-
-        // 到這一步就去將他的email驗證
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
-
-        return response(['message' => 'Email verified successfully.']);
-    }
+    
 
 }
