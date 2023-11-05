@@ -17,7 +17,7 @@ class AuthService
         // 嘗試使用憑證獲取 JWT token
         $token = JWTAuth::attempt($credentials);
         if (!$token) {
-            return ['error' => '無效的憑證', 'status' => 401];
+            return ['error' => "Invalid credentials", 'status' => 401];
         }
 
         // 獲取 token 的有效期

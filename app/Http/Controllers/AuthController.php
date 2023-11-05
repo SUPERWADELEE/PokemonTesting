@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cookie;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
@@ -62,7 +62,7 @@ class AuthController extends Controller
 
     // 生成響應
     $response = response()->json([
-        'message' => '登錄成功',
+        'message' => "Login successful",
     ], $loginResponse['status']);
 
     // 創建 cookie
@@ -90,64 +90,28 @@ class AuthController extends Controller
      *   "message": "Failed to logout"
      * }
      */
-    public function logout()
+    public function logout(Request $request)
     {
         try {
-            // 取出token 將其失效
-            JWTAuth::invalidate(JWTAuth::getToken());
-
-            return response()->json(['message' => 'Successfully logged out']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to logout'], 500);
-        }
-    }
-
-    /**
-     * 註冊email驗證信確認
-     * 
+            // 從 cookie 中取出 token
+            $token = $request->cookie('jwt');
     
-     * 電子郵件驗證確認
-     *
-     * 此端點用於確認用戶的電子郵件驗證(和前端較無關聯）。
-     * 它會比對提供的hash值和用戶的電子郵件生成的hash值。
-     * 如果驗證成功，該用戶的電子郵件將被標記為已驗證，並且將觸發一個已驗證的事件。
-     * 系統會將email驗證的日期存入資料庫
-     *
-     * @param Request $request HTTP請求
-     * @param int $id 用戶ID
-     * @param string $hash 從驗證郵件中提供的hash值
-     * 
-     * @throws AuthorizationException 當提供的hash值不匹配時
-     * 
-     * @response 200 {
-     *   "message": "Email verified successfully."
-     * }
-     * 
-     * @response 200 {
-     *   "message": "Email already verified."
-     * }
-     */
-
-    public function verifyEmail(Request $request, $id, $hash)
-    {
-        $user = User::findOrFail($id);
-
-        // 此方法通常用來判斷文件是否被串改
-        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            throw new AuthorizationException();
+            // 將 token 設為無效
+            JWTAuth::setToken($token)->invalidate();
+    
+            // 清除客戶端的 JWT cookie
+            $cookie = Cookie::forget('jwt');
+    
+            $response = response()->json(['message' => "Successfully logged out"]);
+    
+            // 將清除 cookie 的響應附加到返回的響應中
+            return $response->withCookie($cookie);
+        } catch (\Exception $e) {
+            return response()->json(['message' => "Failed to logout"], 500);
         }
-
-        // 判斷這個email是否已經驗證過
-        if ($user->hasVerifiedEmail()) {
-            return response(['message' => 'Email already verified.']);
-        }
-
-        // 到這一步就去將他的email驗證
-        if ($user->markEmailAsVerified()) {
-            event(new Verified($user));
-        }
-
-        return response(['message' => 'Email verified successfully.']);
     }
+    
+
+
 
 }
