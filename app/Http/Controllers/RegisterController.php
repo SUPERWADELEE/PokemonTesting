@@ -67,7 +67,7 @@ class RegisterController extends Controller
 
         event(new Registered($user));
 
-        return response(['message' => 'User registered successfully!', 'user' => $user], 201);
+        return response(['message' => 'User registered successfully!'], 201);
     }
 
 
