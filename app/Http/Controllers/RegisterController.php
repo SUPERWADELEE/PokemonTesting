@@ -87,7 +87,8 @@ class RegisterController extends Controller
 
         // 到這一步就去將他的user表的email欄位標注日期
         $user->markEmailAsVerified();
-            // event(new Verified($user));
+        
+        // 直接導回首頁
         return redirect('https://wade.monster');
         
 
