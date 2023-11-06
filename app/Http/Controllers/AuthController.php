@@ -45,35 +45,35 @@ class AuthController extends Controller
      * }
      */
     public function login(Request $request, AuthService $authService)
-{
-    // 驗證表單
-    $credentials = $request->validate([
-        'email' => 'required|string|email',
-        'password' => 'required|string',
-    ]);
+    {
+        // 驗證表單
+        $credentials = $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
 
-    // 使用 AuthService 處理登錄
-    $loginResponse = $authService->attemptLogin($credentials);
+        // 使用 AuthService 處理登錄
+        $loginResponse = $authService->attemptLogin($credentials);
 
-    if (array_key_exists('error', $loginResponse)) {
-        // 如果有錯誤，返回相應的錯誤信息
-        return response()->json(['error' => $loginResponse['error']], $loginResponse['status']);
+        if (array_key_exists('error', $loginResponse)) {
+            // 如果有錯誤，返回相應的錯誤信息
+            return response()->json(['error' => $loginResponse['error']], $loginResponse['status']);
+        }
+
+        // 生成響應
+        $response = response()->json([
+            'message' => config('success_messages.LOGIN_SUCCESS'),
+        ], $loginResponse['status']);
+
+
+
+
+        // 創建 cookie
+        $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, false, true);
+
+        // 將 cookie 附加到響應
+        return $response->cookie($cookie);
     }
-
-    // 生成響應
-    $response = response()->json([
-        'message' => config('success_messages.LOGIN_SUCCESS'),
-    ], $loginResponse['status']);
-
-
-    
-    
-    // 創建 cookie
-    $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, false, true);
-
-    // 將 cookie 附加到響應
-    return $response->cookie($cookie);
-}
 
 
 
@@ -93,28 +93,31 @@ class AuthController extends Controller
      *   "message": "Failed to logout"
      * }
      */
-    public function logout(Request $request)
+    public function logout(Request $request, AuthService $authService)
     {
-        try {
-            // 從 cookie 中取出 token
-            $token = $request->cookie('jwt');
-    
-            // 將 token 設為無效
-            JWTAuth::setToken($token)->invalidate();
-    
-            // 清除客戶端的 JWT cookie
-            $cookie = Cookie::forget('jwt');
-    
-            $response = response()->json(['message' => "Successfully logged out"]);
-    
-            // 將清除 cookie 的響應附加到返回的響應中
-            return $response->withCookie($cookie);
-        } catch (\Exception $e) {
-            return response()->json(['message' => "Failed to logout"], 500);
+        // 从 cookie 中取出 token
+        $token = $request->cookie('jwt');
+
+       
+        // 使用 AuthService 来处理注销逻辑
+        $logoutResponse = $authService->logout($token);
+
+        // 检查是否有错误信息
+        if (isset($logoutResponse['error'])) {
+            return response()->json([
+                'error' => $logoutResponse['error']
+            ], $logoutResponse['status']);
         }
+
+        $response = response()->json([
+            'message' => $logoutResponse['message']
+        ], $logoutResponse['status']);
+
+        // 如果注销成功，清除 cookie
+        if (isset($logoutResponse['cookie'])) {
+            $response = $response->withCookie($logoutResponse['cookie']);
+        }
+
+        return $response;
     }
-    
-
-
-
 }

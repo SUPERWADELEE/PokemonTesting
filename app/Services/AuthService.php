@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -34,5 +35,27 @@ class AuthService
             'token_ttl' => $tokenTTL,
             'status' => Response::HTTP_OK
         ];
+    }
+
+    public function logout($token)
+    {
+        try {
+            // 将 token 设置为无效
+            JWTAuth::setToken($token)->invalidate();
+
+            // 清除客户端的 JWT cookie
+            $cookie = Cookie::forget('jwt');
+
+            return [
+                'message' => config("success_messages.LOGOUT_SUCCESS"),
+                'status' => Response::HTTP_OK,
+                'cookie' => $cookie
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => config("error_messages.LOGOUTFAILED"),
+                'status' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ];
+        }
     }
 }
