@@ -41,11 +41,7 @@ Route::middleware('auth:api', 'checkStatus', 'throttle:100000,1')->group(functio
 
     Route::put('pokemons/{pokemon}/evolution', [PokemonController::class, 'evolution']);
 
-    /**
-     * race管理
-     */
-    // race列表
-    Route::get('races', [RaceController::class, 'index']);
+    
 
     /**
      * user管理
@@ -72,7 +68,14 @@ Route::middleware('auth:api', 'checkStatus', 'throttle:100000,1')->group(functio
     Route::post('payments', [PaymentController::class, 'checkout']);
 });
 
-// 註冊
+/**
+     * race管理
+     */
+    // race列表
+    Route::get('races', [RaceController::class, 'index']);
+
+
+    // 註冊
 Route::post('/register', [RegisterController::class, 'register']);
 
 // 登入
