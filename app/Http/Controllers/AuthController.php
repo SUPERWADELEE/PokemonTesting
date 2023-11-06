@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\AuthService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Cookie;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 
@@ -43,27 +44,37 @@ class AuthController extends Controller
      *   "error": "信箱未驗證"
      * }
      */
-    public function login(Request $request)
+    public function login(Request $request, AuthService $authService)
     {
-        // 先針對輸入的部分做驗表單驗證       
+        // 驗證表單
         $credentials = $request->validate([
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
-        // 根據進來的guard設定,去預先的表單設定查看輸入的資料是否存在
-        $token = JWTAuth::attempt($credentials);
+        // 使用 AuthService 處理登錄
+        $loginResponse = $authService->attemptLogin($credentials);
 
-        if (!$token) {
-            return response()->json(['error' => 'Invalid credentials'], 401);
+        if (array_key_exists('error', $loginResponse)) {
+            // 如果有錯誤，返回相應的錯誤信息
+            return response()->json(['error' => $loginResponse['error']], $loginResponse['status']);
         }
 
-        return response()->json([
-            'message' => 'Login successful',
-            'token' => $token,
-            'user' => Auth::user()
-        ], 200);
+        // 生成響應
+        $response = response()->json([
+            'message' => config('success_messages.LOGIN_SUCCESS'),
+        ], $loginResponse['status']);
+
+
+
+
+        // 創建 cookie
+        $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, false, true);
+
+        // 將 cookie 附加到響應
+        return $response->cookie($cookie);
     }
+
 
 
 
@@ -82,44 +93,32 @@ class AuthController extends Controller
      *   "message": "Failed to logout"
      * }
      */
-    public function logout()
+
+    public function logout(Request $request, AuthService $authService)
     {
-        try {
-            // 取出token 將其失效
-            JWTAuth::invalidate(JWTAuth::getToken());
+        // 从 cookie 中取出 token
+        $token = $request->cookie('jwt');
 
-            return response()->json(['message' => 'Successfully logged out']);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to logout'], 500);
+       
+        // 使用 AuthService 来处理注销逻辑
+        $logoutResponse = $authService->logout($token);
+
+        // 检查是否有错误信息
+        if (isset($logoutResponse['error'])) {
+            return response()->json([
+                'error' => $logoutResponse['error']
+            ], $logoutResponse['status']);
         }
+
+        $response = response()->json([
+            'message' => $logoutResponse['message']
+        ], $logoutResponse['status']);
+
+        // 如果注销成功，清除 cookie
+        if (isset($logoutResponse['cookie'])) {
+            $response = $response->withCookie($logoutResponse['cookie']);
+        }
+
+        return $response;
     }
-
-    /**
-     * 註冊email驗證信確認
-     * 
-    
-     * 電子郵件驗證確認
-     *
-     * 此端點用於確認用戶的電子郵件驗證(和前端較無關聯）。
-     * 它會比對提供的hash值和用戶的電子郵件生成的hash值。
-     * 如果驗證成功，該用戶的電子郵件將被標記為已驗證，並且將觸發一個已驗證的事件。
-     * 系統會將email驗證的日期存入資料庫
-     *
-     * @param Request $request HTTP請求
-     * @param int $id 用戶ID
-     * @param string $hash 從驗證郵件中提供的hash值
-     * 
-     * @throws AuthorizationException 當提供的hash值不匹配時
-     * 
-     * @response 200 {
-     *   "message": "Email verified successfully."
-     * }
-     * 
-     * @response 200 {
-     *   "message": "Email already verified."
-     * }
-     */
-
-    
-
 }
