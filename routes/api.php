@@ -85,6 +85,9 @@ Route::post('/Auth/logout', [AuthController::class, 'logout']);
 // 藍星金流結帳回傳
 Route::post('/payResult', [PaymentsResponseController::class, 'notifyResponse']);
 
+// 驗證信回傳接收
+Route::get('email/verify/{id}/{hash}', [RegisterController::class, 'verifyEmail'])->name('verification.verify');
+
 // 第三方登入
 Route::get('login/google', [GoogleLoginController::class, 'redirectToProvider']);
 Route::get('login/google/callback', [GoogleLoginController::class, 'handleProviderCallback']);

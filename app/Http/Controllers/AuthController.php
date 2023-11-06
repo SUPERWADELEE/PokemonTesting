@@ -93,6 +93,7 @@ class AuthController extends Controller
      *   "message": "Failed to logout"
      * }
      */
+
     public function logout(Request $request, AuthService $authService)
     {
         // 从 cookie 中取出 token

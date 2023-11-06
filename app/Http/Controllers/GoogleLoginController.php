@@ -36,13 +36,13 @@ class GoogleLoginController extends Controller
     public function redirectToProvider()
     {
 
-    //     try {
-    //         return Socialite::driver('google')->redirect();
-    //     } catch (\Exception $e) {
-    //         // Log::error('Error redirecting to Google: ' . $e->getMessage());
+        try {
+            return Socialite::driver('google')->redirect();
+        } catch (\Exception $e) {
+            // Log::error('Error redirecting to Google: ' . $e->getMessage());
 
-    //         return response()->json(['error' => '無法重定向到Google。請稍後再試。'], 500);
-    //     }
+            return response()->json(['error' => '無法重定向到Google。請稍後再試。'], 500);
+        }
     }
 
 

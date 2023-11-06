@@ -67,7 +67,32 @@ class RegisterController extends Controller
 
         event(new Registered($user));
 
-        return response(['message' => 'User registered successfully!', 'user' => $user], 201);
+        return response(['message' => 'User registered successfully!'], 201);
+    }
+
+
+    public function verifyEmail(Request $request, $id, $hash)
+    {
+        $user = User::findOrFail($id);
+
+        // 此方法通常用來判斷文件是否被串改
+        if (!hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            throw new AuthorizationException();
+        }
+
+        // 判斷這個email是否已經驗證過
+        if ($user->hasVerifiedEmail()) {
+            return response(['message' => 'Email already verified.']);
+        }
+
+        // 到這一步就去將他的user表的email欄位標注日期
+        $user->markEmailAsVerified();
+        
+        // 直接導回首頁
+        return redirect('https://wade.monster');
+        
+
+        
     }
 
 
