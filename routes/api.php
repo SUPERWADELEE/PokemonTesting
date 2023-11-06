@@ -13,6 +13,7 @@ use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,7 +28,7 @@ use App\Http\Controllers\UserController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::middleware('auth:api', 'checkStatus', 'throttle:100000,1')->group(function () {
+Route::middleware(['jwt.cookie', 'checkStatus', 'throttle:100000,1'])->group(function () {
 
     /**
      * pokemon管理
@@ -75,7 +76,8 @@ Route::middleware('auth:api', 'checkStatus', 'throttle:100000,1')->group(functio
     Route::get('races', [RaceController::class, 'index']);
 
 
-    // 註冊
+
+// 註冊
 Route::post('/register', [RegisterController::class, 'register']);
 
 // 登入
@@ -85,6 +87,9 @@ Route::post('/Auth/logout', [AuthController::class, 'logout']);
 
 // 藍星金流結帳回傳
 Route::post('/payResult', [PaymentsResponseController::class, 'notifyResponse']);
+
+// 驗證信回傳接收
+Route::get('email/verify/{id}/{hash}', [RegisterController::class, 'verifyEmail'])->name('verification.verify');
 
 // 第三方登入
 Route::get('login/google', [GoogleLoginController::class, 'redirectToProvider']);

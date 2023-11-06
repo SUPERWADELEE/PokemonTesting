@@ -39,9 +39,10 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            
         ],
     ];
 
@@ -67,5 +68,12 @@ class Kernel extends HttpKernel
         // 確認使用者是否被停權
         'checkStatus' => \App\Http\Middleware\CheckUserStatus::class,
         'cors' => \App\Http\Middleware\Cors::class,
+        
+        'logcookies' => \App\Http\Middleware\LogCookies::class,
+        'jwt.cookie' =>\App\Http\Middleware\JWTAuthCookieMiddleware::class,
+
+
     ];
-}
+    
+
+    }
