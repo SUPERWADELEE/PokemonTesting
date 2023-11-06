@@ -62,9 +62,12 @@ class AuthController extends Controller
 
     // 生成響應
     $response = response()->json([
-        'message' => "Login successful",
+        'message' => config('success_messages.LOGIN_SUCCESS'),
     ], $loginResponse['status']);
 
+
+    
+    
     // 創建 cookie
     $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, false, true);
 

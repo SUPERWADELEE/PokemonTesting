@@ -2,6 +2,8 @@
 namespace App\Services;
 
 use App\Models\User;
+use Symfony\Component\HttpFoundation\Response;
+
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService
@@ -11,13 +13,16 @@ class AuthService
         // 檢查用戶是否已經驗證了電子郵箱
         $user = User::where('email', $credentials['email'])->first();
         if ($user && is_null($user->email_verified_at)) {
-            return ['error' => '信箱未驗證', 'status' => 403];
+            return ['error' => config('error_messages.EMAIL_NOT_VERIFIED'),
+            'status' => Response::HTTP_FORBIDDEN ];
         }
+        
 
         // 嘗試使用憑證獲取 JWT token
         $token = JWTAuth::attempt($credentials);
         if (!$token) {
-            return ['error' => "Invalid credentials", 'status' => 401];
+            return ['error' => config('error_messages.INVALID_CREDENTIALS'),
+            'status' => Response::HTTP_UNAUTHORIZED  ];
         }
 
         // 獲取 token 的有效期
@@ -27,7 +32,7 @@ class AuthService
         return [
             'token' => $token,
             'token_ttl' => $tokenTTL,
-            'status' => 200
+            'status' => Response::HTTP_OK
         ];
     }
 }
