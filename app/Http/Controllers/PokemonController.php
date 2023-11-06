@@ -47,6 +47,7 @@ class PokemonController extends Controller
 
     public function index()
     {
+
         // 透過JWT取得當前登入的用戶
         $user = auth()->user();
 

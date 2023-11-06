@@ -13,6 +13,7 @@ use App\Http\Controllers\RaceController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,7 +28,7 @@ use App\Http\Controllers\UserController;
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
-Route::middleware('auth:api', 'checkStatus', 'throttle:100000,1')->group(function () {
+Route::middleware(['jwt.cookie', 'checkStatus', 'throttle:100000,1'])->group(function () {
 
     /**
      * pokemon管理
@@ -71,6 +72,7 @@ Route::middleware('auth:api', 'checkStatus', 'throttle:100000,1')->group(functio
     // 購買金流
     Route::post('payments', [PaymentController::class, 'checkout']);
 });
+
 
 // 註冊
 Route::post('/register', [RegisterController::class, 'register']);
