@@ -42,11 +42,7 @@ Route::middleware(['jwt.cookie', 'checkStatus', 'throttle:100000,1'])->group(fun
 
     Route::put('pokemons/{pokemon}/evolution', [PokemonController::class, 'evolution']);
 
-    /**
-     * race管理
-     */
-    // race列表
-    Route::get('races', [RaceController::class, 'index']);
+    
 
     /**
      * user管理
@@ -72,6 +68,13 @@ Route::middleware(['jwt.cookie', 'checkStatus', 'throttle:100000,1'])->group(fun
     // 購買金流
     Route::post('payments', [PaymentController::class, 'checkout']);
 });
+
+/**
+     * race管理
+     */
+    // race列表
+    Route::get('races', [RaceController::class, 'index']);
+
 
 
 // 註冊

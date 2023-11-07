@@ -65,9 +65,13 @@ class RaceController extends Controller
     public function index()
     {
         // 選擇所有寶可夢的名稱和照片
-        $pokemons = Race::select('id', 'name', 'photo')->paginate(10);
+        $pokemons = Race::select('id', 'name', 'photo','stock','price')->paginate(12);
+        $result = $pokemons->toArray();
 
-        return $pokemons;
+        unset($result['links']);
+
+        return response()->json($result);
+
     }
 
     // public function evolutionLevel(Race $race)
