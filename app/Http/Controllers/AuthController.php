@@ -69,7 +69,8 @@ class AuthController extends Controller
 
 
         // 創建 cookie
-        $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, false, true);
+        $cookie = cookie('jwt', $loginResponse['token'], $loginResponse['token_ttl'], null, null, true, true, false, 'none');
+
 
         // 將 cookie 附加到響應
         return $response->cookie($cookie);
